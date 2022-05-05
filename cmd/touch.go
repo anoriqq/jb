@@ -6,35 +6,38 @@ package cmd
 
 import (
 	"fmt"
+	"strings"
 
+	"github.com/anoriqq/jb/internal/client"
+	"github.com/anoriqq/jb/internal/config"
+	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 )
 
 // touchCmd represents the touch command
 var touchCmd = &cobra.Command{
 	Use:   "touch",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("touch called")
-	},
+	Short: "touch",
+	Long:  `Arguments are sent as a message`,
+	RunE:  touchRun,
 }
 
 func init() {
 	rootCmd.AddCommand(touchCmd)
+}
 
-	// Here you will define your flags and configuration settings.
+func touchRun(_ *cobra.Command, args []string) error {
+	c := client.New(config.Cfg)
 
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// touchCmd.PersistentFlags().String("foo", "", "A help for foo")
+	resp, err := c.PostChatCommand(config.Cfg.TouchChannel, strings.Join(args, " "))
+	if err != nil {
+		return err
+	}
+	if !resp.OK {
+		return errors.New(resp.Error)
+	}
 
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// touchCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	fmt.Println("Successfully touch")
+
+	return nil
 }
