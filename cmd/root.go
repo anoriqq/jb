@@ -32,7 +32,7 @@ func init() {
 		panic(err)
 	}
 
-	configHome := filepath.Join(home, ".config/jobcan_touch")
+	configHome := filepath.Join(home, ".config/jb")
 	configName := "config"
 	configType := "yml"
 	configPath := filepath.Join(configHome, configName+"."+configType)
